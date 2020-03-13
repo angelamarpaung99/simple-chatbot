@@ -8,10 +8,13 @@ import com.linecorp.bot.client.MessageContentResponse;
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.*;
+import com.linecorp.bot.model.message.FlexMessage;
 import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.StickerMessage;
 import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.message.flex.container.FlexContainer;
 import com.linecorp.bot.model.objectmapper.ModelObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.InputStreamResource;
@@ -66,23 +69,16 @@ public class Controller {
 ////                    reply(replyMessage);
 //                }
                 if (event instanceof MessageEvent) {
-                    if (((MessageEvent) event).getMessage() instanceof AudioMessageContent
-                            || ((MessageEvent) event).getMessage() instanceof ImageMessageContent
-                            || ((MessageEvent) event).getMessage() instanceof VideoMessageContent
-                            || ((MessageEvent) event).getMessage() instanceof FileMessageContent
+                    if  (MessageEvent.getMessage() instanceof AudioMessageContent
+                            || MessageEvent.getMessage() instanceof ImageMessageContent
+                            || MessageEvent.getMessage() instanceof VideoMessageContent
+                            || MessageEvent.getMessage() instanceof FileMessageContent
                     ) {
-                        String baseURL = "https://emosigwasli.herokuapp.com/";
-                        String contentURL = baseURL + "/content/" + ((MessageEvent) event).getMessage().getId();
-                        String contentType = ((MessageEvent) event).getMessage().getClass().getSimpleName();
-                        String textMsg = contentType.substring(0, contentType.length() - 14)
-                                + " yang kamu kirim bisa diakses dari link:\n "
-                                + contentURL;
-
-                        replyText(((MessageEvent) event).getReplyToken(), textMsg);
+                        handleContentMessage(event);
+                    } else if(MessageEvent.getMessage() instanceof TextMessageContent) {
+                        handleTextMessage(event);
                     } else {
-                        MessageEvent messageEvent = (MessageEvent) event;
-                        TextMessageContent textMessageContent = (TextMessageContent) messageEvent.getMessage();
-                        replyText(messageEvent.getReplyToken(), textMessageContent.getText());
+                        replyText(MessageEvent.getReplyToken(), "Unknown Message");
                     }
                 }
             });
@@ -136,9 +132,46 @@ public class Controller {
         reply(replyMessage);
     }
 
+    private void replyFlexMessage(String replyToken) {
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            String flexTemplate = IOUtils.toString(classLoader.getResourceAsStream("flex_message.json"));
+
+            ObjectMapper objectMapper = ModelObjectMapper.createNewObjectMapper();
+            FlexContainer flexContainer = objectMapper.readValue(flexTemplate, FlexContainer.class);
+
+            ReplyMessage replyMessage = new ReplyMessage(replyToken, new FlexMessage("Coffee Shop", flexContainer));
+            reply(replyMessage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void handleContentMessage(MessageEvent event) {
+        String baseURL     = "https://emosigwasli.herokuapp.com/";
+        String contentURL  = baseURL+"/content/"+ event.getMessage().getId();
+        String contentType = event.getMessage().getClass().getSimpleName();
+        String textMsg     = contentType.substring(0, contentType.length() -14)
+                + " yang kamu kirim bisa diakses dari link:\n "
+                + contentURL;
+
+        replyText(event.getReplyToken(), textMsg);
+    }
+
+    private void handleTextMessage(MessageEvent event) {
+        TextMessageContent textMessageContent = (TextMessageContent) event.getMessage();
+
+        if (textMessageContent.getText().toLowerCase().contains("flex")) {
+            replyFlexMessage(event.getReplyToken());
+        } else {
+            replyText(event.getReplyToken(), textMessageContent.getText());
+        }
+    }
+
 //    private void replySticker(String replyToken, String packageId, String stickerId){
 //        StickerMessage stickerMessage = new StickerMessage(packageId, stickerId);
 //        ReplyMessage replyMessage = new ReplyMessage(replyToken, stickerMessage);
 //        reply(replyMessage);
 //    }
+
 }
