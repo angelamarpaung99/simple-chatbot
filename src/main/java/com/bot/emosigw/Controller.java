@@ -69,7 +69,7 @@ public class Controller {
 ////                    reply(replyMessage);
 //                }
                 if (event instanceof MessageEvent) {
-                    MessageEvent messageEvent = (MessageEvent) event
+                    MessageEvent messageEvent = (MessageEvent) event;
                     if  (messageEvent.getMessage() instanceof AudioMessageContent
                             || messageEvent.getMessage() instanceof ImageMessageContent
                             || messageEvent.getMessage() instanceof VideoMessageContent
