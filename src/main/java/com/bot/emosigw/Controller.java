@@ -56,8 +56,8 @@ public class Controller {
                 if (event instanceof MessageEvent) {
                     MessageEvent messageEvent = (MessageEvent) event;
                     TextMessageContent textMessageContent = (TextMessageContent) messageEvent.getMessage();
-//                    replyText(messageEvent.getReplyToken(), textMessageContent.getText());
-                    replySticker(messageEvent.getReplyToken(), "1", "1");
+                    replyText(messageEvent.getReplyToken(), textMessageContent.getText());
+//                    replySticker(messageEvent.getReplyToken(), "1", "1");
 
 //                    List<Message> msgArray = new ArrayList<>();
 //                    msgArray.add(new TextMessage(textMessageContent.getText()));
@@ -129,15 +129,15 @@ public class Controller {
         }
     }
 
-//    private void replyText(String replyToken, String messageToUser){
-//        TextMessage textMessage = new TextMessage(messageToUser);
-//        ReplyMessage replyMessage = new ReplyMessage(replyToken, textMessage);
-//        reply(replyMessage);
-//    }
-
-    private void replySticker(String replyToken, String packageId, String stickerId){
-        StickerMessage stickerMessage = new StickerMessage(packageId, stickerId);
-        ReplyMessage replyMessage = new ReplyMessage(replyToken, stickerMessage);
+    private void replyText(String replyToken, String messageToUser){
+        TextMessage textMessage = new TextMessage(messageToUser);
+        ReplyMessage replyMessage = new ReplyMessage(replyToken, textMessage);
         reply(replyMessage);
     }
+
+//    private void replySticker(String replyToken, String packageId, String stickerId){
+//        StickerMessage stickerMessage = new StickerMessage(packageId, stickerId);
+//        ReplyMessage replyMessage = new ReplyMessage(replyToken, stickerMessage);
+//        reply(replyMessage);
+//    }
 }
