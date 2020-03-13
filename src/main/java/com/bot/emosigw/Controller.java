@@ -53,10 +53,10 @@ public class Controller {
             EventsModel eventsModel = objectMapper.readValue(eventsPayload, EventsModel.class);
 
             eventsModel.getEvents().forEach((event)->{
-                if (event instanceof MessageEvent) {
-                    MessageEvent messageEvent = (MessageEvent) event;
-                    TextMessageContent textMessageContent = (TextMessageContent) messageEvent.getMessage();
-                    replyText(messageEvent.getReplyToken(), textMessageContent.getText());
+//                if (event instanceof MessageEvent) {
+//                    MessageEvent messageEvent = (MessageEvent) event;
+//                    TextMessageContent textMessageContent = (TextMessageContent) messageEvent.getMessage();
+//                    replyText(messageEvent.getReplyToken(), textMessageContent.getText());
 //                    replySticker(messageEvent.getReplyToken(), "1", "1");
 
 //                    List<Message> msgArray = new ArrayList<>();
@@ -64,27 +64,27 @@ public class Controller {
 //                    msgArray.add(new StickerMessage("1", "106"));
 //                    ReplyMessage replyMessage = new ReplyMessage(messageEvent.getReplyToken(), msgArray);
 //                    reply(replyMessage);
-                }
-//                if (event instanceof MessageEvent) {
-//                    if  ((  (MessageEvent) event).getMessage() instanceof AudioMessageContent
-//                            || ((MessageEvent) event).getMessage() instanceof ImageMessageContent
-//                            || ((MessageEvent) event).getMessage() instanceof VideoMessageContent
-//                            || ((MessageEvent) event).getMessage() instanceof FileMessageContent
-//                    ) {
-//                        String baseURL     = "https://emosigwasli.herokuapp.com/";
-//                        String contentURL  = baseURL+"/content/"+ ((MessageEvent) event).getMessage().getId();
-//                        String contentType = ((MessageEvent) event).getMessage().getClass().getSimpleName();
-//                        String textMsg     = contentType.substring(0, contentType.length() -14)
-//                                + " yang kamu kirim bisa diakses dari link:\n "
-//                                + contentURL;
-//
-//                        replyText(((MessageEvent) event).getReplyToken(), textMsg);
-//                    } else {
-//                        MessageEvent messageEvent = (MessageEvent) event;
-//                        TextMessageContent textMessageContent = (TextMessageContent) messageEvent.getMessage();
-//                        replyText(messageEvent.getReplyToken(), textMessageContent.getText());
-//                    }
 //                }
+                if (event instanceof MessageEvent) {
+                    if  ((  (MessageEvent) event).getMessage() instanceof AudioMessageContent
+                            || ((MessageEvent) event).getMessage() instanceof ImageMessageContent
+                            || ((MessageEvent) event).getMessage() instanceof VideoMessageContent
+                            || ((MessageEvent) event).getMessage() instanceof FileMessageContent
+                    ) {
+                        String baseURL     = "https://emosigwasli.herokuapp.com/";
+                        String contentURL  = baseURL+"/content/"+ ((MessageEvent) event).getMessage().getId();
+                        String contentType = ((MessageEvent) event).getMessage().getClass().getSimpleName();
+                        String textMsg     = contentType.substring(0, contentType.length() -14)
+                                + " yang kamu kirim bisa diakses dari link:\n "
+                                + contentURL;
+
+                        replyText(((MessageEvent) event).getReplyToken(), textMsg);
+                    } else {
+                        MessageEvent messageEvent = (MessageEvent) event;
+                        TextMessageContent textMessageContent = (TextMessageContent) messageEvent.getMessage();
+                        replyText(messageEvent.getReplyToken(), textMessageContent.getText());
+                    }
+                }
             });
 
             return new ResponseEntity<>(HttpStatus.OK);
