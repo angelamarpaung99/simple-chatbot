@@ -69,16 +69,17 @@ public class Controller {
 ////                    reply(replyMessage);
 //                }
                 if (event instanceof MessageEvent) {
-                    if  (MessageEvent.getMessage() instanceof AudioMessageContent
-                            || MessageEvent.getMessage() instanceof ImageMessageContent
-                            || MessageEvent.getMessage() instanceof VideoMessageContent
-                            || MessageEvent.getMessage() instanceof FileMessageContent
+                    MessageEvent messageEvent = (MessageEvent) event
+                    if  (messageEvent.getMessage() instanceof AudioMessageContent
+                            || messageEvent.getMessage() instanceof ImageMessageContent
+                            || messageEvent.getMessage() instanceof VideoMessageContent
+                            || messageEvent.getMessage() instanceof FileMessageContent
                     ) {
-                        handleContentMessage(event);
-                    } else if(MessageEvent.getMessage() instanceof TextMessageContent) {
-                        handleTextMessage(event);
+                        handleContentMessage(messageEvent);
+                    } else if(messageEvent.getMessage() instanceof TextMessageContent) {
+                        handleTextMessage(messageEvent);
                     } else {
-                        replyText(MessageEvent.getReplyToken(), "Unknown Message");
+                        replyText(messageEvent.getReplyToken(), "Unknown Message");
                     }
                 }
             });
